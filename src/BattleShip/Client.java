@@ -63,6 +63,7 @@ public class Client
 	//When a fire command is typed, this method parses the coordinates and launches a missle at the enemy
 	boolean processFireCmd( String [] s )
 	{
+		//Do checking to make sure the fire command is valid here, i.e the missile isn't shooting off the board
 	}
 	
 	//Send a message to the opponent

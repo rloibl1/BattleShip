@@ -1,5 +1,6 @@
 package BattleShip;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GameBoard
 {
@@ -13,18 +14,56 @@ public class GameBoard
 	
 	public GameBoard( int rowCount, int colCount )
 	{
+		//create the 2D array of cells
 		this.rowCount = rowCount;
 		this.colCount = colCount;
 		
-		//create the 2D array of cells
+		//Initialize rows
+		this.cells = new ArrayList<ArrayList< Cell >>(rowCount);		
+		
+		//Initialize columns
+		ArrayList<Cell> column = new ArrayList< Cell >(colCount); //Capacity
+		
+		for(int i=0; i < colCount; i++ ){ //Size
+			column.add(new Cell());
+		}
+		
+		for(int i=0; i < rowCount; i++){
+			//this.cells.add(new ArrayList< Cell >(colCount));
+			this.cells.add(column);
+		}		
 	}
 	
 	public String draw()
 	{
-
-		//draw the entire board... I'd use a StringBuilder object to improve speed
-		//remember - you must draw one entire row at a time, and don't forget the
-		//pretty border...
+		StringBuilder sb = new StringBuilder();
+		ArrayList< Cell > column;
+		Cell c;
+		
+		//Upper border
+		for(int i=0; i< this.colCount + 2; i++){
+			sb.append("=");
+		}
+		sb.append(System.lineSeparator());
+		
+		//Game board cells and side borders 
+		for (int i=0; i < this.cells.size(); i++){
+			sb.append("|");
+			column = this.cells.get(i);
+			for(int j=0; j < column.size(); j++){
+				c = column.get(j);
+				sb = sb.append(c.draw());
+			}
+			sb.append("|");
+			sb.append(System.lineSeparator());
+		}
+		
+		//Lower border
+		for(int i=0; i< this.colCount + 2; i++){
+			sb.append("=");
+		}
+		sb.append(System.lineSeparator());
+		return sb.toString();
 	}
 	
 	//add in a ship if it fully 1) fits on the board and 2) doesn't collide w/
@@ -32,16 +71,91 @@ public class GameBoard
 	//Returns true on successful addition; false, otherwise
 	public boolean addShip( Ship s , Position sternLocation, HEADING bowDirection )
 	{
+		int ship_length = s.getLength();		
+		Cell c =  new Cell();
 		
+		//Determine heading for math operations
+		//First check is if the ship will fit on the game board
+		//Second check it if there are any other ships in the way
+		
+		//Subtract from rows
+		if(bowDirection == HEADING.NORTH){
+			if(sternLocation.y - ship_length >= 0){
+				for(int i=0; i < ship_length; i++){
+					c = cells.get(sternLocation.x).get(sternLocation.y - i);
+					if(c.getShip() == null){ //Cell is empty
+						//Add ship to the cell
+						c.setShip(s); 
+						cells.get(sternLocation.x).set(sternLocation.y - i, c);
+					}
+					else{return false;} //Ship already in cell					
+				}
+				//All cells allocated, ship successfully placed
+				return true;
+			}
+			else{return false;} //No room for ship
+		}
+		//Add to rows
+		else if(bowDirection == HEADING.SOUTH){
+			if(sternLocation.y + ship_length <= this.rowCount){
+				for(int i=0; i < ship_length; i++){
+					c = cells.get(sternLocation.x).get(sternLocation.y + i);
+					if(c.getShip() == null){ //Cell is empty
+						//Add ship to the cell
+						c.setShip(s); 
+						cells.get(sternLocation.x).set(sternLocation.y + i, c);
+					}
+					else{return false;} //Ship already in cell
+				}				
+				//All cells allocated, ship successfully placed
+				return true;
+			}
+			else{return false;} //No room for ship
+		}
+		//Subtract from columns
+		else if(bowDirection == HEADING.WEST){
+			if(sternLocation.x - ship_length >= 0){
+				for(int i=0; i < ship_length; i++){
+					c = cells.get(sternLocation.y).get(sternLocation.x - i);
+					if(c.getShip() == null){ //Cell is empty
+						//Add ship to the cell
+						c.setShip(s); 
+						cells.get(sternLocation.y).set(sternLocation.x - i, c);
+					}
+					else{return false;} //Ship already in cell
+				}
+				//All cells allocated, ship successfully placed
+				return true;
+			}
+			else{return false;} //No room for ship
+		}
+		//Add to columns
+		else if(bowDirection == HEADING.EAST){
+			if(sternLocation.x + ship_length <= this.colCount){
+				for(int i=0; i < ship_length; i++){
+					c = cells.get(sternLocation.y).get(sternLocation.x + i);
+					if(c.getShip() == null){ //Cell is empty
+						//Add ship to the cell
+						c.setShip(s); 
+						cells.get(sternLocation.y).set(sternLocation.x + i, c);
+					}
+					else{return false;} //Ship already in cell
+				}
+				//All cells allocated, ship successfully placed
+				return true;
+			}
+			else{return false;} //No room for ship
+		}
+		else {return false;} //Heading error
 	}
-	
+
 	//Returns A reference to a ship, if that ship was struck by a missle.
 	//The returned ship can then be used to print the name of the ship which
 	//was hit to the player who hit it.
 	//Ensure you handle missiles that may fly off the grid
 	public Ship fireMissle( Position coordinate )
 	{
-		
+		return cells.get(coordinate.x).get(coordinate.y).ship; //Return the ship at the targeted location, or null if there isn't one
 	}
 	
 	//Here's a simple driver that should work without touching any of the code below this point
@@ -64,7 +178,7 @@ public class GameBoard
 			System.out.println( "Failed to add " + s.getName() );
 		
 		System.out.println( b.draw() );
-		
+		/*
 		b.fireMissle( new Position(3,5) );
 		System.out.println( b.draw() );
 		b.fireMissle( new Position(3,4) );
@@ -80,6 +194,7 @@ public class GameBoard
 		
 		b.fireMissle( new Position(6,6) );
 		System.out.println( b.draw() );
+		*/
 	}
 
 }
