@@ -19,19 +19,17 @@ public class GameBoard
 		this.colCount = colCount;
 		
 		//Initialize rows
-		this.cells = new ArrayList<ArrayList< Cell >>(rowCount);		
-		
-		//Initialize columns
-		ArrayList<Cell> column = new ArrayList< Cell >(colCount); //Capacity
+		this.cells = new ArrayList<ArrayList< Cell >>(rowCount);
 		
 		for(int i=0; i < colCount; i++ ){ //Size
-			column.add(new Cell());
-		}
-		
-		for(int i=0; i < rowCount; i++){
-			//this.cells.add(new ArrayList< Cell >(colCount));
+			//Initialize columns
+			ArrayList<Cell> column = new ArrayList< Cell >(colCount); //Capacity			
+			for(int j=0; j < rowCount; j++){
+				column.add(new Cell());				
+			}
 			this.cells.add(column);
 		}		
+
 	}
 	
 	public String draw()
@@ -52,8 +50,9 @@ public class GameBoard
 			column = this.cells.get(i);
 			for(int j=0; j < column.size(); j++){
 				c = column.get(j);
-				sb = sb.append(c.draw());
+				sb = sb.append(c.draw());;
 			}
+			System.out.println("");
 			sb.append("|");
 			sb.append(System.lineSeparator());
 		}
@@ -73,7 +72,7 @@ public class GameBoard
 	{
 		int ship_length = s.getLength();		
 		Cell c =  new Cell();
-		
+
 		//Determine heading for math operations
 		//First check is if the ship will fit on the game board
 		//Second check it if there are any other ships in the way
@@ -82,11 +81,11 @@ public class GameBoard
 		if(bowDirection == HEADING.NORTH){
 			if(sternLocation.y - ship_length >= 0){
 				for(int i=0; i < ship_length; i++){
-					c = cells.get(sternLocation.x).get(sternLocation.y - i);
+					c = cells.get(sternLocation.y - i).get(sternLocation.x);
 					if(c.getShip() == null){ //Cell is empty
 						//Add ship to the cell
 						c.setShip(s); 
-						cells.get(sternLocation.x).set(sternLocation.y - i, c);
+						cells.get(sternLocation.y - i).set(sternLocation.x, c);
 					}
 					else{return false;} //Ship already in cell					
 				}
@@ -99,11 +98,11 @@ public class GameBoard
 		else if(bowDirection == HEADING.SOUTH){
 			if(sternLocation.y + ship_length <= this.rowCount){
 				for(int i=0; i < ship_length; i++){
-					c = cells.get(sternLocation.x).get(sternLocation.y + i);
+					c = cells.get(sternLocation.y + i).get(sternLocation.x);
 					if(c.getShip() == null){ //Cell is empty
 						//Add ship to the cell
 						c.setShip(s); 
-						cells.get(sternLocation.x).set(sternLocation.y + i, c);
+						cells.get(sternLocation.y + i).set(sternLocation.x, c);
 					}
 					else{return false;} //Ship already in cell
 				}				
@@ -119,7 +118,7 @@ public class GameBoard
 					c = cells.get(sternLocation.y).get(sternLocation.x - i);
 					if(c.getShip() == null){ //Cell is empty
 						//Add ship to the cell
-						c.setShip(s); 
+						c.setShip(s);
 						cells.get(sternLocation.y).set(sternLocation.x - i, c);
 					}
 					else{return false;} //Ship already in cell
@@ -177,7 +176,9 @@ public class GameBoard
 		else
 			System.out.println( "Failed to add " + s.getName() );
 		
+	
 		System.out.println( b.draw() );
+		
 		/*
 		b.fireMissle( new Position(3,5) );
 		System.out.println( b.draw() );

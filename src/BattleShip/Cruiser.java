@@ -9,7 +9,7 @@ public class Cruiser extends Ship
 	
 	public char drawShipStatusAtCell( boolean isDamaged )
 	{
-		return 'x';
+		return 'C';
 	}
 	
 	public int getLength()

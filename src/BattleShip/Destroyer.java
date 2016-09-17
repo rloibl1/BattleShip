@@ -9,7 +9,7 @@ public class Destroyer extends Ship
 	
 	public char drawShipStatusAtCell( boolean isDamaged )
 	{
-		return 'x';
+		return 'D';
 	}
 	
 	public int getLength()
