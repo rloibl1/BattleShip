@@ -1,13 +1,12 @@
 package BattleShip;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.ArrayList;;
 
 public class GameBoard
 {
 	int rowCount = 10;
 	int colCount = 10;
 	
-	final String LINE_END = System.getProperty("line.separator"); 
+	final String LINE_END = System.getProperty("line.separator"); //***can remove this***
 	
 	ArrayList< ArrayList< Cell > > cells;
 	ArrayList< Ship > myShips = new ArrayList<Ship>();
@@ -72,7 +71,7 @@ public class GameBoard
 	{
 		int ship_length = s.getLength();		
 		Cell c =  new Cell();
-
+		
 		//Determine heading for math operations
 		//First check is if the ship will fit on the game board
 		//Second check it if there are any other ships in the way
@@ -90,6 +89,7 @@ public class GameBoard
 					else{return false;} //Ship already in cell					
 				}
 				//All cells allocated, ship successfully placed
+				this.myShips.add(s);
 				return true;
 			}
 			else{return false;} //No room for ship
@@ -107,6 +107,7 @@ public class GameBoard
 					else{return false;} //Ship already in cell
 				}				
 				//All cells allocated, ship successfully placed
+				this.myShips.add(s);
 				return true;
 			}
 			else{return false;} //No room for ship
@@ -124,6 +125,7 @@ public class GameBoard
 					else{return false;} //Ship already in cell
 				}
 				//All cells allocated, ship successfully placed
+				this.myShips.add(s);
 				return true;
 			}
 			else{return false;} //No room for ship
@@ -141,6 +143,7 @@ public class GameBoard
 					else{return false;} //Ship already in cell
 				}
 				//All cells allocated, ship successfully placed
+				this.myShips.add(s);
 				return true;
 			}
 			else{return false;} //No room for ship
@@ -154,7 +157,14 @@ public class GameBoard
 	//Ensure you handle missiles that may fly off the grid
 	public Ship fireMissle( Position coordinate )
 	{
-		return cells.get(coordinate.x).get(coordinate.y).ship; //Return the ship at the targeted location, or null if there isn't one
+		Ship s = cells.get(coordinate.y).get(coordinate.x).ship;
+		
+		if(s != null){
+			cells.get(coordinate.y).get(coordinate.x).hasBeenStruckByMissile(true);
+			cells.get(coordinate.y).get(coordinate.x).ship = null;
+		}
+		
+		return s;
 	}
 	
 	//Here's a simple driver that should work without touching any of the code below this point
@@ -179,7 +189,6 @@ public class GameBoard
 	
 		System.out.println( b.draw() );
 		
-		/*
 		b.fireMissle( new Position(3,5) );
 		System.out.println( b.draw() );
 		b.fireMissle( new Position(3,4) );
@@ -195,7 +204,6 @@ public class GameBoard
 		
 		b.fireMissle( new Position(6,6) );
 		System.out.println( b.draw() );
-		*/
 	}
 
 }
