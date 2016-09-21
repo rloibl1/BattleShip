@@ -130,7 +130,7 @@ public class Client
 		if( x >= 0 && x <= board.colCount){ //***check if x is columns or y is columns***
 			if(y >= 0 && y <= board.rowCount){
 				coordinate = new Position(x,y);
-				board.fireMissle(coordinate);
+				this.man.getOpponent(this).getGameBoard().fireMissle(coordinate);
 				return true; //Missile fired
 			}
 		}
@@ -142,6 +142,7 @@ public class Client
 	{
 		if(s.length() <= 80){ //Enforce a 80 character chat limit
 			//send the message, I assume it will have to be sent using a method in the gamemanager.java file
+			this.man.getOpponent(this).out.println(s);
 			return true;
 		}
 		else{

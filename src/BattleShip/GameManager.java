@@ -31,6 +31,12 @@ public class GameManager
 	//so a client is able to use this method to get a reference to his opponent
 	public Client getOpponent( Client me )
 	{
+		for(Client c : clients){
+			if( c != me){
+				return c;
+			}
+		}
+		return null;
 	}
 	
 	//In a asychronous nature, begin playing the game. This should only occur after 
@@ -56,43 +62,24 @@ public class GameManager
 		int port  = 10000;
 		Socket server = null;
 		
-		while(true){
+		try{
 			
-			try{
+			while(clients.size() < 2){
 				listener = new ServerSocket(port);
 				server = listener.accept();
 				System.out.println("Connected");
-				DataOutputStream out = new DataOutputStream(server.getOutputStream());
 				InputStreamReader in = new InputStreamReader(server.getInputStream());				
-				this.br = new BufferedReader(in);	
-				this.pw = new PrintWriter(out);
-				
-				clients.parallelStream().forEach( client -> 
-				{
-					//Stuck here
-					GameManager m = new GameManager();
-					client = new Client(br,pw,);
-					this.clients.add(client);
-
-				} );
-			
-			}catch(SocketTimeoutException s){
-				System.out.println("Timeout");
-				break;
-			}catch(IOException e){
-				e.printStackTrace();
-				break;
+				BufferedReader br = new BufferedReader(in);	
+				PrintWriter pw = new PrintWriter(server.getOutputStream(), true);
+				Client c = new Client(br,pw, this);
+				clients.add(c);			
 			}
-			finally{
-				server.close();
-			}
-			
-			if(listener.isBound()){
-				return true;
-			}
+			return true;
 		}
-		
-		return false;
+		finally{
+				System.out.println("Game over");
+				server.close();
+		}
 	}
 	
 	//let players initialize their name, and gameboard here. This should be done asynchronously
