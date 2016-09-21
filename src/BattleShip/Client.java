@@ -3,7 +3,7 @@ package BattleShip;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+
 
 public class Client
 {
@@ -39,7 +39,11 @@ public class Client
 			out.flush();
 			
 			//Read next command
-			processCommand();
+			try{
+				processCommand();
+			}catch(IOException e){
+				out.println("Command Error");
+			}
 			
 			//Perform test here to see if we have won or lost
 			
@@ -83,12 +87,9 @@ public class Client
 	{
 		//Fire
 		if(in.read() == 'F'){
-			String [] s = new String[1];
-			Integer i = in.read();
-			s[0] = i.toString();
-			i = in.read();
-			s[1] = i.toString();
-			
+			String cmd = in.readLine(); 
+			String [] s = cmd.split(" ");
+
 			if(processFireCmd(s)){
 				return true;
 			}
@@ -106,14 +107,19 @@ public class Client
 			else{
 				return false;
 			}
-		}		
+		}
+		else if(in.read() == 'D'){
+			this.targets.draw();
+			this.board.draw();
+			return true;
+		}
 		else{
 			//Invalid command
 			throw new IOException(); //***This could be incorrect***
 		}
 	}
 	
-	//When a fire command is typed, this method parses the coordinates and launches a missle at the enemy
+	//When a fire command is typed, this method parses the coordinates and launches a missile at the enemy
 	boolean processFireCmd( String [] s )
 	{
 		//Do checking to make sure the fire command is valid here, i.e the missile isn't shooting off the board
@@ -265,7 +271,6 @@ public class Client
 	
 	public static void main( String [] args )
 	{
-		
-		
+
 	}
 }

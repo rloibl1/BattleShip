@@ -2,17 +2,25 @@ package BattleShip;
 import BattleShip.Client;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 public class GameManager
 {
 	private ArrayList<Client> clients = new ArrayList<Client>();
 	private ServerSocket listener = null;
+	public BufferedReader br;
+	public PrintWriter pw;
 	
 	public GameManager()
 	{		
@@ -45,11 +53,56 @@ public class GameManager
 	//Don't forget about try/finally blocks, if needed
 	boolean waitFor2PlayersToConnect() throws IOException
 	{
+		int port  = 10000;
+		Socket server = null;
+		
+		while(true){
+			
+			try{
+				listener = new ServerSocket(port);
+				server = listener.accept();
+				System.out.println("Connected");
+				DataOutputStream out = new DataOutputStream(server.getOutputStream());
+				InputStreamReader in = new InputStreamReader(server.getInputStream());				
+				this.br = new BufferedReader(in);	
+				this.pw = new PrintWriter(out);
+				
+				clients.parallelStream().forEach( client -> 
+				{
+					//Stuck here
+					GameManager m = new GameManager();
+					client = new Client(br,pw,);
+					this.clients.add(client);
+
+				} );
+			
+			}catch(SocketTimeoutException s){
+				System.out.println("Timeout");
+				break;
+			}catch(IOException e){
+				e.printStackTrace();
+				break;
+			}
+			finally{
+				server.close();
+			}
+			
+			if(listener.isBound()){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	//let players initialize their name, and gameboard here. This should be done asynchronously
 	void initPlayers() throws IOException
 	{
+		clients.parallelStream().forEach( client -> 
+		{
+			try{ client.playGame(); }
+			catch( IOException e ) { e.printStackTrace(); } 
+		} );
 	}
 	
 	
